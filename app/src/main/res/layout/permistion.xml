@@ -2,22 +2,27 @@
 <layout>
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ImageView
-            android:id="@+id/face"
-            android:layout_width="350dp"
-            android:layout_height="350dp"
-            android:src="@drawable/face"
-            android:layout_centerInParent="true"/>
+        android:layout_height="match_parent"
+        android:background="@color/white">
         <TextView
+            android:id="@+id/no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Không Cấp Quyền\nThì Xử Lý Làm sao!"
+            android:text="Không Có Quyền Truy Cập Vị Trí\n Ứng Dụng Không Thể Hoạt Động"
+            android:fontFamily="@font/architep"
             android:textSize="30dp"
+            android:layout_centerInParent="true"
             android:textColor="@color/purple_200"
+            android:gravity="center"/>
+        <ImageView
+            android:id="@+id/face"
+            android:layout_above="@+id/no"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:layout_below="@+id/face"/>
+            android:src="@drawable/khunglong"/>
+
+
 
     </RelativeLayout>
 </layout>

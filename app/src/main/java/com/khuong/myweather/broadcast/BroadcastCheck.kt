@@ -7,29 +7,63 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import com.khuong.myweather.application.MyApplication
 
-class BroadcastCheck : BroadcastReceiver(){
+class BroadcastCheck : BroadcastReceiver {
+    constructor()
+
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var s: String = ""
+    fun setLo(latitude: Double, longitude: Double) {
+        this.latitude = latitude
+        this.longitude = longitude
+    }
+
+    fun setName(name: String) {
+        this.s = name
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
-        when(intent.action){
-            ConnectivityManager.CONNECTIVITY_ACTION->{
-                if(isNetworksAvailable(context)) {}
-                else Toast.makeText(context,"Internet Disconnected",Toast.LENGTH_LONG).show()
-            }
+        when (intent.action) {
+            ConnectivityManager.CONNECTIVITY_ACTION -> {
+                if (isNetworksAvailable(context)) {
+                    if (latitude != 0.0 && s == "") {
+                        MyApplication.getWeather().getWeatherLocation(latitude, longitude)
+                        MyApplication.getWeather().getWeekLocation(latitude, longitude)
+                        Log.d(
+                            "Debug:",
+                            "------------------------------------------------->$latitude $longitude "
+                        )
+                    }
+                    if (s != ""){
+                        MyApplication.getWeather().getWeather(s)
+                        MyApplication.getWeather().getWeek(s)
+                        Log.d(
+                            "Debug:",
+                            "-------------------sssssssssssssssssss--------------->$s"
+                        )
+                    }
 
+                } else Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG)
+                    .show()
+            }
         }
     }
 
-    private fun isNetworksAvailable(context: Context): Boolean{
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun isNetworksAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (connectivityManager == null) return false
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork
             if (network == null) return false
             val capabilities = connectivityManager.getNetworkCapabilities(network)
             return capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-        }else{
+        } else {
             val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
             return networkInfo != null && networkInfo.isConnected
         }

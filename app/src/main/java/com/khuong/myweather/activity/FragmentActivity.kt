@@ -30,8 +30,8 @@ import com.khuong.myweather.fragment.WeatherFragment
 
 class FragmentActivity : AppCompatActivity() {
 
-    private var latitude: Double? = 0.0
-    private var longitude: Double? = 0.0
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
     private lateinit var binding: ActivityFragmentBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val PERMISSION_ID = 1010
@@ -40,12 +40,12 @@ class FragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
+        addFaceFragment()
         broadcastCheck = BroadcastCheck()
-        sttBar()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         requestPermission()
         getLastLocation()
-
+        sttBar()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
     }
 
     private fun sttBar() {
@@ -87,6 +87,7 @@ class FragmentActivity : AppCompatActivity() {
     }
 
     private fun getLastLocation() {
+
         if (checkPermission()) {
             if (isLocationEnabled()) {
                 if (ActivityCompat.checkSelfPermission(
@@ -107,7 +108,8 @@ class FragmentActivity : AppCompatActivity() {
                         Log.d("Debug:", "---------------------Location:" + location.longitude)
                         latitude = location.latitude
                         longitude = location.longitude
-                        addWeatherFragment(latitude!!, longitude!!)
+                        addWeatherFragment(latitude, longitude)
+                        broadcastCheck.setLo(latitude, longitude)
                     }
                 }
             } else {
@@ -149,7 +151,7 @@ class FragmentActivity : AppCompatActivity() {
             val lastLocation: Location = locationResult.lastLocation
             latitude = lastLocation.latitude
             longitude = lastLocation.longitude
-            addWeatherFragment(latitude!!, longitude!!)
+            addWeatherFragment(latitude, longitude)
         }
     }
 
@@ -196,8 +198,6 @@ class FragmentActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d("Debug:", "You have the Permission")
                 getLastLocation()
-            } else {
-                addFaceFragment()
             }
         }
 

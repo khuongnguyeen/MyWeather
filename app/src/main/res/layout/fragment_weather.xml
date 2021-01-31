@@ -8,319 +8,346 @@
         android:layout_height="match_parent"
         android:background="@drawable/bg_f">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:orientation="vertical">
+           <RelativeLayout
+               android:id="@+id/rl_face"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:visibility="gone"
+               android:background="@color/white">
+               <ImageView
+                   android:id="@+id/face"
+                   android:layout_width="200dp"
+                   android:layout_height="200dp"
+                   android:src="@drawable/face"
+                   android:layout_centerInParent="true"/>
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Không Có Internet"
+                   android:fontFamily="@font/architep"
+                   android:textSize="30dp"
+                   android:textColor="@color/purple_200"
+                   android:layout_centerHorizontal="true"
+                   android:gravity="center"
+                   android:layout_below="@+id/face"/>
 
-            <LinearLayout
-                android:id="@+id/ll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+           </RelativeLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layoutDirection="rtl"
-                    android:orientation="horizontal">
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
 
-                    <ImageButton
-                        android:id="@+id/btn_search"
-                        android:layout_width="56dp"
-                        android:layout_height="56dp"
-                        android:background="?actionBarItemBackground"
-                        android:src="@drawable/search" />
+               <LinearLayout
+                   android:id="@+id/ll"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                   <LinearLayout
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layoutDirection="rtl"
+                       android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/tv_city"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="@dimen/namSau"
-                            android:fontFamily="@font/architep"
-                            android:gravity="center"
-                            android:text="@string/text_test"
-                            android:textColor="@color/white"
-                            android:textSize="30sp" />
+                       <ImageButton
+                           android:id="@+id/btn_search"
+                           android:layout_width="56dp"
+                           android:layout_height="56dp"
+                           android:background="?actionBarItemBackground"
+                           android:src="@drawable/search" />
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/layoutSearch"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:hint="@string/location"
-                            android:textColorHint="@color/white"
-                            android:visibility="gone"
-                            app:hintTextColor="@color/white">
+                       <RelativeLayout
+                           android:layout_width="match_parent"
+                           android:layout_height="match_parent">
 
-                            <EditText
-                                android:id="@+id/edt_search"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:imeOptions="actionSearch"
-                                android:inputType="text"
-                                android:layoutDirection="ltr"
-                                android:textColor="@color/white"
-                                android:textSize="15sp" />
+                           <TextView
+                               android:id="@+id/tv_city"
+                               android:layout_width="match_parent"
+                               android:layout_height="match_parent"
+                               android:layout_marginLeft="@dimen/namSau"
+                               android:fontFamily="@font/architep"
+                               android:gravity="center"
+                               android:text="@string/text_test"
+                               android:textColor="@color/white"
+                               android:textSize="30sp" />
 
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </RelativeLayout>
-                </LinearLayout>
+                           <com.google.android.material.textfield.TextInputLayout
+                               android:id="@+id/layoutSearch"
+                               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                               android:layout_width="match_parent"
+                               android:layout_height="56dp"
+                               android:hint="@string/location"
+                               android:textColorHint="@color/white"
+                               android:visibility="gone"
+                               app:hintTextColor="@color/white">
 
-                <TextView
-                    android:id="@+id/tv_weather_one"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
-                    android:fontFamily="@font/architep"
-                    android:gravity="center"
-                    android:text="Clouds"
-                    android:textColor="@color/white"
-                    android:textSize="50sp" />
+                               <EditText
+                                   android:id="@+id/edt_search"
+                                   android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   android:imeOptions="actionSearch"
+                                   android:inputType="text"
+                                   android:layoutDirection="ltr"
+                                   android:textColor="@color/white"
+                                   android:textSize="15sp" />
 
+                           </com.google.android.material.textfield.TextInputLayout>
+                       </RelativeLayout>
+                   </LinearLayout>
 
-            </LinearLayout>
-
-     <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:orientation="vertical"
-         android:layout_centerInParent="true">
-         <LinearLayout
-             android:id="@+id/ll_1"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:gravity="center"
-             android:orientation="horizontal">
-
-             <ImageView
-                 android:id="@+id/iv_weather"
-                 android:layout_width="wrap_content"
-                 android:layout_height="150dp"
-                 android:layout_gravity="center"
-                 android:scaleType="centerCrop"
-                 android:src="@drawable/wc_3" />
-
-             <TextView
-                 android:id="@+id/tv_weather"
-                 android:layout_width="wrap_content"
-                 android:layout_height="150dp"
-                 android:layout_gravity="center"
-                 android:layout_marginLeft="10dp"
-                 android:fontFamily="@font/architep"
-                 android:text="24°"
-                 android:textColor="@color/white"
-                 android:textSize="120sp" />
-
-         </LinearLayout>
-         <LinearLayout
-             android:id="@+id/ll_3"
-             android:layout_above="@+id/ll_2"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:orientation="horizontal"
-             android:weightSum="2">
-
-             <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:gravity="center"
-                 android:orientation="horizontal">
-
-                 <ImageView
-                     android:layout_width="@dimen/icon_one"
-                     android:layout_height="@dimen/icon_one"
-                     android:layout_marginRight="15dp"
-                     android:src="@drawable/ic_layer_wind" />
-
-                 <LinearLayout
-                     android:layout_width="wrap_content"
-                     android:layout_height="80dp"
-                     android:gravity="center"
-                     android:orientation="vertical">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="SSW"
-                         android:textColor="@color/grey_200"
-                         android:textSize="@dimen/text_one" />
-
-                     <TextView
-                         android:id="@+id/tv_toc_do_gio"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="18mph"
-                         android:textColor="@color/white"
-                         android:textSize="@dimen/text_one" />
-
-                 </LinearLayout>
-             </LinearLayout>
-
-             <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:gravity="center"
-                 android:orientation="horizontal">
-
-                 <ImageView
-                     android:layout_width="@dimen/icon_one"
-                     android:layout_height="@dimen/icon_one"
-                     android:layout_marginRight="15dp"
-                     android:src="@drawable/rainn" />
-
-                 <LinearLayout
-                     android:layout_width="wrap_content"
-                     android:layout_height="80dp"
-                     android:gravity="center"
-                     android:orientation="vertical">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="Rain"
-                         android:textColor="@color/grey_200"
-                         android:textSize="@dimen/text_one" />
-
-                     <TextView
-                         android:id="@+id/tv_do_am"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="90%"
-                         android:textColor="@color/white"
-                         android:textSize="@dimen/text_one" />
-
-                 </LinearLayout>
-             </LinearLayout>
-
-         </LinearLayout>
-
-         <LinearLayout
-             android:id="@+id/ll_2"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:orientation="horizontal"
-             android:weightSum="2">
-
-             <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:gravity="center"
-                 android:orientation="horizontal">
-
-                 <ImageView
-                     android:layout_width="@dimen/icon_one"
-                     android:layout_height="@dimen/icon_one"
-                     android:layout_marginEnd="15dp"
-                     android:src="@drawable/sunrise" />
-
-                 <LinearLayout
-                     android:layout_width="wrap_content"
-                     android:layout_height="80dp"
-                     android:gravity="center"
-                     android:orientation="vertical">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="Sunrise"
-                         android:textColor="@color/grey_200"
-                         android:textSize="@dimen/text_one" />
-
-                     <TextView
-                         android:id="@+id/tv_sunrise"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="6 AM"
-                         android:textColor="@color/white"
-                         android:textSize="@dimen/text_one" />
-
-                 </LinearLayout>
-             </LinearLayout>
-
-             <LinearLayout
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_weight="1"
-                 android:gravity="center"
-                 android:orientation="horizontal">
-
-                 <ImageView
-                     android:layout_width="@dimen/icon_one"
-                     android:layout_height="@dimen/icon_one"
-                     android:layout_marginRight="15dp"
-                     android:src="@drawable/sunset" />
-
-                 <LinearLayout
-                     android:layout_width="wrap_content"
-                     android:layout_height="80dp"
-                     android:gravity="center"
-                     android:orientation="vertical">
-
-                     <TextView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="Sunset"
-                         android:textColor="@color/grey_200"
-                         android:textSize="@dimen/text_one" />
-
-                     <TextView
-                         android:id="@+id/tv_sunset"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_gravity="center"
-                         android:fontFamily="@font/architep"
-                         android:text="6 PM"
-                         android:textColor="@color/white"
-                         android:textSize="@dimen/text_one" />
-
-                 </LinearLayout>
-             </LinearLayout>
-
-         </LinearLayout>
-     </LinearLayout>
+                   <TextView
+                       android:id="@+id/tv_weather_one"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginTop="30dp"
+                       android:fontFamily="@font/architep"
+                       android:gravity="center"
+                       android:text="Clouds"
+                       android:textColor="@color/white"
+                       android:textSize="50sp" />
 
 
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="5dp"
-                android:fontFamily="@font/architep"
-                android:gravity="center"
+               </LinearLayout>
 
-                android:text="25/01/2021 16:50"
-                android:textColor="@color/grey_200"
-                android:textSize="15sp" />
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical"
+                   android:layout_centerInParent="true">
+                   <LinearLayout
+                       android:id="@+id/ll_1"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:gravity="center"
+                       android:orientation="horizontal">
+
+                       <ImageView
+                           android:id="@+id/iv_weather"
+                           android:layout_width="wrap_content"
+                           android:maxWidth="200dp"
+                           android:layout_height="150dp"
+                           android:layout_gravity="center"
+                           android:scaleType="centerCrop"
+                           android:src="@drawable/wc_3" />
+
+                       <TextView
+                           android:id="@+id/tv_weather"
+                           android:layout_width="wrap_content"
+                           android:layout_height="150dp"
+                           android:layout_gravity="center"
+                           android:layout_marginLeft="10dp"
+                           android:fontFamily="@font/architep"
+                           android:text="24°"
+                           android:textColor="@color/white"
+                           android:textSize="120sp" />
+
+                   </LinearLayout>
+                   <LinearLayout
+                       android:id="@+id/ll_3"
+                       android:layout_above="@+id/ll_2"
+                       android:layout_width="340dp"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center"
+                       android:orientation="horizontal">
+
+                       <LinearLayout
+                           android:layout_width="170dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:orientation="horizontal">
+
+                           <ImageView
+                               android:layout_width="@dimen/icon_one"
+                               android:layout_height="@dimen/icon_one"
+                               android:layout_marginRight="15dp"
+                               android:src="@drawable/ic_layer_wind" />
+
+                           <LinearLayout
+                               android:layout_width="wrap_content"
+                               android:layout_height="80dp"
+                               android:gravity="center"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="SSW"
+                                   android:textColor="@color/grey_200"
+                                   android:textSize="@dimen/text_one" />
+
+                               <TextView
+                                   android:id="@+id/tv_toc_do_gio"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="18mph"
+                                   android:textColor="@color/white"
+                                   android:textSize="@dimen/text_one" />
+
+                           </LinearLayout>
+                       </LinearLayout>
+
+                       <LinearLayout
+                           android:layout_width="170dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:orientation="horizontal">
+
+                           <ImageView
+                               android:layout_width="@dimen/icon_one"
+                               android:layout_height="@dimen/icon_one"
+                               android:layout_marginRight="15dp"
+                               android:src="@drawable/rainn" />
+
+                           <LinearLayout
+                               android:layout_width="wrap_content"
+                               android:layout_height="80dp"
+                               android:gravity="center"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="Rain"
+                                   android:textColor="@color/grey_200"
+                                   android:textSize="@dimen/text_one" />
+
+                               <TextView
+                                   android:id="@+id/tv_do_am"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="90%"
+                                   android:textColor="@color/white"
+                                   android:textSize="@dimen/text_one" />
+
+                           </LinearLayout>
+                       </LinearLayout>
+
+                   </LinearLayout>
+
+                   <LinearLayout
+                       android:id="@+id/ll_2"
+                       android:layout_width="340dp"
+                       android:layout_height="wrap_content"
+                       android:layout_gravity="center"
+                       android:orientation="horizontal">
+
+                       <LinearLayout
+                           android:layout_width="170dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:orientation="horizontal">
+
+                           <ImageView
+                               android:layout_width="@dimen/icon_one"
+                               android:layout_height="@dimen/icon_one"
+                               android:layout_marginEnd="15dp"
+                               android:src="@drawable/sunrise" />
+
+                           <LinearLayout
+                               android:layout_width="wrap_content"
+                               android:layout_height="80dp"
+                               android:gravity="center"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="Sunrise"
+                                   android:textColor="@color/grey_200"
+                                   android:textSize="@dimen/text_one" />
+
+                               <TextView
+                                   android:id="@+id/tv_sunrise"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="6 AM"
+                                   android:textColor="@color/white"
+                                   android:textSize="@dimen/text_one" />
+
+                           </LinearLayout>
+                       </LinearLayout>
+
+                       <LinearLayout
+                           android:layout_width="170dp"
+                           android:layout_height="wrap_content"
+                           android:gravity="center"
+                           android:orientation="horizontal">
+
+                           <ImageView
+                               android:layout_width="@dimen/icon_one"
+                               android:layout_height="@dimen/icon_one"
+                               android:layout_marginRight="15dp"
+                               android:src="@drawable/sunset" />
+
+                           <LinearLayout
+                               android:layout_width="wrap_content"
+                               android:layout_height="80dp"
+                               android:gravity="center"
+                               android:orientation="vertical">
+
+                               <TextView
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="Sunset"
+                                   android:textColor="@color/grey_200"
+                                   android:textSize="@dimen/text_one" />
+
+                               <TextView
+                                   android:id="@+id/tv_sunset"
+                                   android:layout_width="wrap_content"
+                                   android:layout_height="wrap_content"
+                                   android:layout_gravity="center"
+                                   android:fontFamily="@font/architep"
+                                   android:text="6 PM"
+                                   android:textColor="@color/white"
+                                   android:textSize="@dimen/text_one" />
+
+                           </LinearLayout>
+                       </LinearLayout>
+
+                   </LinearLayout>
+               </LinearLayout>
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rc"
-                android:layout_above="@+id/tv_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </RelativeLayout>
+               <TextView
+                   android:id="@+id/tv_time"
+                   android:layout_width="match_parent"
+                   android:layout_height="20dp"
+                   android:layout_alignParentBottom="true"
+                   android:layout_marginBottom="5dp"
+                   android:fontFamily="@font/architep"
+                   android:gravity="center"
+
+                   android:text="25/01/2021 16:50"
+                   android:textColor="@color/grey_200"
+                   android:textSize="15sp" />
+
+
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rc"
+                   android:layout_above="@+id/tv_time"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   />
+           </RelativeLayout>
+       </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

@@ -1,10 +1,10 @@
 package com.khuong.myweather.fragment
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,12 +13,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.khuong.myweather.adapter.WeatherAdapter
 import com.khuong.myweather.application.MyApplication
+import com.khuong.myweather.broadcast.BroadcastCheck
 import com.khuong.myweather.databinding.FragmentWeatherBinding
 import com.khuong.myweather.model.WeatherData
 import com.khuong.myweather.model.WeatherDataTwo
@@ -33,13 +33,17 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     private var service: WeatherService? = null
     private var conn: ServiceConnection? = null
     private var s = ""
-
+    private lateinit var broadcastCheck: BroadcastCheck
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
+        broadcastCheck = BroadcastCheck()
+        if (!isNetworksAvailable(context!!.applicationContext)){
+            binding.rlFace.visibility = View.VISIBLE
+        }
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
@@ -77,14 +81,31 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         return binding.root
     }
 
-    private fun register() {
-        MyApplication.getWeather().weatherData.observe(this,{
-            update(it)
-            s = it.name
-        })
+    private fun isNetworksAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager == null) return false
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            if (network == null) return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            return capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        } else {
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
 
     }
+
+    private fun register() {
+        MyApplication.getWeather().weatherData.observe(this, {
+            update(it)
+            s = it.name
+            broadcastCheck.setName(s)
+        })
+    }
+
 
     private fun createConnectService() {
         conn = object : ServiceConnection {
@@ -175,12 +196,22 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             override fun doInBackground(vararg params: Void?): Void? {
                 for (i in 1..300) {
                     Log.d("Debug:", "------------------------------------------------->$i")
+                    if (isNetworksAvailable(context!!.applicationContext)){
+                        publishProgress()
+                    }
+
                     SystemClock.sleep(1000)
                 }
                 return null
             }
 
+            override fun onProgressUpdate(vararg values: Void?) {
+                super.onProgressUpdate(*values)
+                binding.rlFace.visibility = View.GONE
+            }
+
             override fun onPostExecute(result: Void?) {
+
                 MyApplication.getWeather().getWeek(s)
                 MyApplication.getWeather().getWeather(s)
                 register()
