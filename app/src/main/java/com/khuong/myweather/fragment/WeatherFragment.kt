@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
+import com.khuong.myweather.R
 import com.khuong.myweather.adapter.WeatherAdapter
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.broadcast.BroadcastCheck
@@ -58,9 +59,12 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         register()
         binding.btnSearch.setOnClickListener {
             binding.layoutSearch.visibility = View.VISIBLE
+            binding.btnSearch.setImageResource(R.drawable.search_off)
             binding.edtSearch.text = null
             binding.tvCity.visibility = View.GONE
         }
+
+
         binding.edtSearch.setOnEditorActionListener { _, i, _ ->
             return@setOnEditorActionListener when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
@@ -74,6 +78,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
                     }
                     binding.layoutSearch.visibility = View.GONE
                     binding.tvCity.visibility = View.VISIBLE
+                    binding.btnSearch.setImageResource(R.drawable.search)
                     val imm =
                         context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(binding.edtSearch.windowToken, 0)
