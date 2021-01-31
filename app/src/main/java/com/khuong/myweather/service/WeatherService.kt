@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.Observer
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
@@ -20,10 +19,10 @@ class WeatherService: LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-        (application as MyApplication).weatherViewModel.weatherData.observe(this, Observer {
+        MyApplication.getWeather().weatherData.observe(this, {
             weatherData = it
         })
-        (application as MyApplication).weatherViewModel.listWeather.observe(this, Observer {
+        MyApplication.getWeather().listWeather.observe(this, {
             listWeather = it
             listWer.clear()
             listWer.addAll(it.list)
@@ -36,6 +35,5 @@ class WeatherService: LifecycleService() {
     }
 
     class MyBinder(val service: WeatherService) : Binder()
-
 
 }

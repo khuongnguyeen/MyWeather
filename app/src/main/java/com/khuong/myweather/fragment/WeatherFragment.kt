@@ -5,16 +5,15 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import androidx.lifecycle.Observer
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
+import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
@@ -27,11 +26,13 @@ import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
 import java.util.*
 
-class WeatherFragment(private val latitude:Double, private val longitude:Double) : Fragment() , SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather{
+class WeatherFragment(private val latitude: Double, private val longitude: Double) : Fragment(),
+    SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather {
 
     private lateinit var binding: FragmentWeatherBinding
-    private var service:WeatherService?=null
-    private var conn : ServiceConnection?=null
+    private var service: WeatherService? = null
+    private var conn: ServiceConnection? = null
+    private var s = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +40,8 @@ class WeatherFragment(private val latitude:Double, private val longitude:Double)
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
-        binding.rc.layoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+        binding.rc.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
         createConnectService()
         register()
@@ -52,12 +54,12 @@ class WeatherFragment(private val latitude:Double, private val longitude:Double)
             return@setOnEditorActionListener when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
                     if (binding.edtSearch.text.toString() == "") {
-                        (context!!.applicationContext as MyApplication).weatherViewModel.getWeatherLocation(latitude,longitude)
-                        (context!!.applicationContext as MyApplication).weatherViewModel.getWeekLocation(latitude,longitude)
+                        MyApplication.getWeather().getWeatherLocation(latitude, longitude)
+                        MyApplication.getWeather().getWeekLocation(latitude, longitude)
                         binding.rc.adapter!!.notifyDataSetChanged()
                     } else {
-                        (context!!.applicationContext as MyApplication).weatherViewModel.getWeather(binding.edtSearch.text.toString())
-                        (context!!.applicationContext as MyApplication).weatherViewModel.getWeek(binding.edtSearch.text.toString())
+                        MyApplication.getWeather().getWeather(binding.edtSearch.text.toString())
+                        MyApplication.getWeather().getWeek(binding.edtSearch.text.toString())
                         binding.rc.adapter!!.notifyDataSetChanged()
                     }
                     binding.layoutSearch.visibility = View.GONE
@@ -71,29 +73,34 @@ class WeatherFragment(private val latitude:Double, private val longitude:Double)
             }
         }
         binding.swipeRefreshLayout.setOnRefreshListener(this)
+        sync()
         return binding.root
     }
 
-    private fun register(){
-        (context!!.applicationContext as MyApplication).weatherViewModel.weatherData.observe(this, Observer {
+    private fun register() {
+        MyApplication.getWeather().weatherData.observe(this,{
             update(it)
+            s = it.name
         })
 
 
     }
 
-    private fun createConnectService(){
-        conn= object : ServiceConnection{
+    private fun createConnectService() {
+        conn = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
             }
+
             override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
                 val myBinder = binder as WeatherService.MyBinder
                 service = myBinder.service
-                if ( service!!.getListWer().size == 0) (context!!.applicationContext as MyApplication)
-                    .weatherViewModel.getWeekLocation(latitude,longitude) else binding.rc.adapter!!.notifyDataSetChanged()
+                if (service!!.getListWer().size == 0) MyApplication.getWeather().getWeekLocation(
+                    latitude,
+                    longitude
+                ) else binding.rc.adapter!!.notifyDataSetChanged()
 
-                if(service!!.getWeatherData()==null) (context!!.applicationContext as MyApplication).weatherViewModel
-                    .getWeatherLocation(latitude,longitude)
+                if (service!!.getWeatherData() == null) MyApplication.getWeather()
+                    .getWeatherLocation(latitude, longitude)
             }
         }
         val intent = Intent()
@@ -107,22 +114,17 @@ class WeatherFragment(private val latitude:Double, private val longitude:Double)
     }
 
     override fun onRefresh() {
-        val handler = Handler()
-        handler.postDelayed({ binding.swipeRefreshLayout.isRefreshing = false },3000)
-        if (binding.edtSearch.text.toString() == "") {
-            (context!!.applicationContext as MyApplication).weatherViewModel.getWeatherLocation(latitude,longitude)
-            (context!!.applicationContext as MyApplication).weatherViewModel.getWeekLocation(latitude,longitude)
-        } else {
-            (context!!.applicationContext as MyApplication).weatherViewModel.getWeather(binding.edtSearch.text.toString())
-            (context!!.applicationContext as MyApplication).weatherViewModel.getWeek(binding.edtSearch.text.toString())
-        }
+        Handler().postDelayed({ binding.swipeRefreshLayout.isRefreshing = false }, 3000)
+        MyApplication.getWeather().getWeek(s)
+        MyApplication.getWeather().getWeather(s)
+        register()
     }
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun update(weatherData: WeatherData) {
 
         binding.rc.adapter!!.notifyDataSetChanged()
-        val date = SimpleDateFormat(" HH:mm:ss dd/MM/yyyy")
+        val date = SimpleDateFormat(" HH:mm:ss _ dd/MM/yyyy")
             .format(Date(weatherData.dt * 1000L))
         val sunrise = SimpleDateFormat(" HH:mm")
             .format(Date(weatherData.sys.sunrise * 1000L))
@@ -157,15 +159,36 @@ class WeatherFragment(private val latitude:Double, private val longitude:Double)
     }
 
     override fun getCount(): Int {
-        if ( service == null){
+        if (service == null) {
             return 0
         }
         return service!!.getListWer().size
     }
 
-    override fun getData(position: Int): WeatherDataTwo
-    {
+    override fun getData(position: Int): WeatherDataTwo {
         return service!!.getListWer()[position]
+    }
+
+    fun sync() {
+        val async = @SuppressLint("StaticFieldLeak")
+        object : AsyncTask<Void, Void, Void>() {
+            override fun doInBackground(vararg params: Void?): Void? {
+                for (i in 1..300) {
+                    Log.d("Debug:", "------------------------------------------------->$i")
+                    SystemClock.sleep(1000)
+                }
+                return null
+            }
+
+            override fun onPostExecute(result: Void?) {
+                MyApplication.getWeather().getWeek(s)
+                MyApplication.getWeather().getWeather(s)
+                register()
+                Log.d("Debug:", "------=========================-----------------------> ")
+                sync()
+            }
+        }
+        async.execute()
     }
 
 

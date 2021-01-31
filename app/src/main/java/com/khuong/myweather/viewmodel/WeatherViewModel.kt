@@ -56,6 +56,7 @@ class WeatherViewModel : ViewModel() {
             .subscribe(
                 {
                     listWeather.value = it
+                    Log.d("duy khuong", "----------------->>>> API <<<<-----------------")
                 },
                 {
                     Log.e("duy khuong", "----------------->>>> API <<<<-----------------")

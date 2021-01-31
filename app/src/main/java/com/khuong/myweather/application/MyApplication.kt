@@ -5,7 +5,10 @@ import com.khuong.myweather.viewmodel.WeatherViewModel
 
 class MyApplication: Application() {
 
-    lateinit var weatherViewModel: WeatherViewModel
+    companion object{
+        private lateinit var weatherViewModel: WeatherViewModel
+        fun getWeather() = weatherViewModel
+    }
 
     override fun onCreate() {
         super.onCreate()
