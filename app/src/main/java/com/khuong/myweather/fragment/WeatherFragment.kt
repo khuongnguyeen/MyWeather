@@ -2,9 +2,6 @@ package com.khuong.myweather.fragment
 
 import android.annotation.SuppressLint
 import android.content.*
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.NetworkInfo
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -26,7 +24,6 @@ import com.khuong.myweather.model.WeatherDataTwo
 import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Executors
 
 class WeatherFragment(private val latitude: Double, private val longitude: Double) : Fragment(),
     SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather {
@@ -38,25 +35,22 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     private var conn: ServiceConnection? = null
     private var s = ""
     private lateinit var broadcastCheck: BroadcastCheck
-    private val asy = MyAsync()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        asy.execute()
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         broadcastCheck = BroadcastCheck()
-        if (!isNetworksAvailable(context!!.applicationContext)) {
-            binding.rlFace.visibility = View.VISIBLE
-        }
+
         sync()
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
         createConnectService()
         register()
+
         binding.btnSearch.setOnClickListener {
             binding.layoutSearch.visibility = View.VISIBLE
             binding.btnSearch.setImageResource(R.drawable.search_off)
@@ -93,28 +87,14 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         return binding.root
     }
 
-    private fun isNetworksAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (connectivityManager == null) return false
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork
-            if (network == null) return false
-            val capabilities = connectivityManager.getNetworkCapabilities(network)
-            return capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-        } else {
-            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
-            return networkInfo != null && networkInfo.isConnected
-        }
-
-    }
-
     private fun register() {
         MyApplication.getWeather().weatherData.observe(this, {
             update(it)
             s = it.name
             broadcastCheck.setName(s)
+        })
+        MyApplication.getWeather().listWe.observe(this, {
+            binding.rc.adapter!!.notifyDataSetChanged()
         })
     }
 
@@ -142,7 +122,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     }
 
     override fun onDestroyView() {
-        asy.cancel(true)
         context!!.unbindService(conn!!)
         super.onDestroyView()
     }
@@ -162,6 +141,13 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             .format(Date(weatherData.sys.sunrise * 1000L))
         val sunset = SimpleDateFormat(" HH:mm")
             .format(Date(weatherData.sys.sunset * 1000L))
+
+        val dpCalculation = resources.displayMetrics.density
+        binding.ivWeather.scaleType = ImageView.ScaleType.CENTER_CROP
+        binding.ivWeather.layoutParams.width = (200* dpCalculation).toInt()
+        binding.ivWeather.layoutParams.height = (150* dpCalculation).toInt()
+
+
         Glide.with(this)
             .load("http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png")
             .into(binding.ivWeather)
@@ -207,6 +193,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             override fun doInBackground(vararg params: Void?): Void? {
                 for (i in 1..300) {
                     Log.d("Debug:", "------------------------------------------------->$i")
+
                     SystemClock.sleep(1000)
                 }
                 return null
@@ -224,21 +211,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         async.execute()
     }
 
-    inner class MyAsync : AsyncTask<Void, Void, Void>() {
-        override fun doInBackground(vararg params: Void?): Void? {
-            while (true) {
-                if (isNetworksAvailable(context!!.applicationContext)) {
-                    publishProgress()
-                }
-            }
-        }
-
-        override fun onProgressUpdate(vararg values: Void?) {
-            super.onProgressUpdate(*values)
-            binding.rlFace.visibility = View.GONE
-        }
-
-    }
 }
 
 
