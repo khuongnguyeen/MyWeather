@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="icon_one">40dp</dimen>
+    <dimen name="text_one">20sp</dimen>
+    <dimen name="namSau">56dp</dimen>
+</resources>

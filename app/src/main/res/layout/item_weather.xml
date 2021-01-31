@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_item">
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_thu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/architep"
+                android:gravity="center"
+                android:text="Fri"
+                android:textColor="@color/grey_200"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/iv_weather_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:src="@drawable/wc_3" />
+
+            <TextView
+                android:id="@+id/tv_do_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/architep"
+                android:text="16°"
+                android:textColor="@color/grey_200"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</layout>
