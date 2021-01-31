@@ -8,6 +8,7 @@ import com.khuong.myweather.api.ApiService
 import com.khuong.myweather.api.RetrofitUtils
 import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
+import com.khuong.myweather.model.WeatherDataTwo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -16,10 +17,7 @@ class WeatherViewModel : ViewModel() {
     private val weatherAPI: ApiService = RetrofitUtils.createRetrofit()
     val weatherData = MutableLiveData<WeatherData>()
      val listWeather= MutableLiveData<ListWeather>()
-
-
-
-
+     val listWe= MutableLiveData<MutableList<WeatherDataTwo>>()
 
     @SuppressLint("CheckResult")
     fun getWeather(
@@ -34,7 +32,6 @@ class WeatherViewModel : ViewModel() {
             .subscribe(
                 {
                     weatherData.value = it
-//                    update(it)
                 },
                 {
                     Log.e("duy khuong", "----------------->>>> API <<<<-----------------")
@@ -56,6 +53,7 @@ class WeatherViewModel : ViewModel() {
             .subscribe(
                 {
                     listWeather.value = it
+                    listWe.value = it.list
                     Log.d("duy khuong", "----------------->>>> API <<<<-----------------")
                 },
                 {
@@ -79,6 +77,7 @@ class WeatherViewModel : ViewModel() {
             .subscribe(
                 {
                     listWeather.value = it
+                    listWe.value = it.list
                 },
                 {
                     Log.e("duy khuong", "----------------->>>> API <<<<-----------------")

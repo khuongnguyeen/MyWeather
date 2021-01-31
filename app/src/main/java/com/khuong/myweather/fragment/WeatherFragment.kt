@@ -25,25 +25,32 @@ import com.khuong.myweather.model.WeatherDataTwo
 import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 
 class WeatherFragment(private val latitude: Double, private val longitude: Double) : Fragment(),
     SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather {
+
+
 
     private lateinit var binding: FragmentWeatherBinding
     private var service: WeatherService? = null
     private var conn: ServiceConnection? = null
     private var s = ""
     private lateinit var broadcastCheck: BroadcastCheck
+    private val asy = MyAsync()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        asy.execute()
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         broadcastCheck = BroadcastCheck()
-        if (!isNetworksAvailable(context!!.applicationContext)){
+        if (!isNetworksAvailable(context!!.applicationContext)) {
             binding.rlFace.visibility = View.VISIBLE
         }
+        sync()
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
@@ -60,24 +67,24 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
                     if (binding.edtSearch.text.toString() == "") {
                         MyApplication.getWeather().getWeatherLocation(latitude, longitude)
                         MyApplication.getWeather().getWeekLocation(latitude, longitude)
-                        binding.rc.adapter!!.notifyDataSetChanged()
                     } else {
                         MyApplication.getWeather().getWeather(binding.edtSearch.text.toString())
                         MyApplication.getWeather().getWeek(binding.edtSearch.text.toString())
-                        binding.rc.adapter!!.notifyDataSetChanged()
+
                     }
                     binding.layoutSearch.visibility = View.GONE
                     binding.tvCity.visibility = View.VISIBLE
                     val imm =
                         context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(binding.edtSearch.windowToken, 0)
+                    binding.rc.adapter!!.notifyDataSetChanged()
                     true
                 }
                 else -> false
             }
         }
         binding.swipeRefreshLayout.setOnRefreshListener(this)
-        sync()
+
         return binding.root
     }
 
@@ -130,6 +137,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     }
 
     override fun onDestroyView() {
+        asy.cancel(true)
         context!!.unbindService(conn!!)
         super.onDestroyView()
     }
@@ -143,8 +151,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun update(weatherData: WeatherData) {
-
-        binding.rc.adapter!!.notifyDataSetChanged()
         val date = SimpleDateFormat(" HH:mm:ss _ dd/MM/yyyy")
             .format(Date(weatherData.dt * 1000L))
         val sunrise = SimpleDateFormat(" HH:mm")
@@ -196,18 +202,9 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             override fun doInBackground(vararg params: Void?): Void? {
                 for (i in 1..300) {
                     Log.d("Debug:", "------------------------------------------------->$i")
-                    if (isNetworksAvailable(context!!.applicationContext)){
-                        publishProgress()
-                    }
-
                     SystemClock.sleep(1000)
                 }
                 return null
-            }
-
-            override fun onProgressUpdate(vararg values: Void?) {
-                super.onProgressUpdate(*values)
-                binding.rlFace.visibility = View.GONE
             }
 
             override fun onPostExecute(result: Void?) {
@@ -222,5 +219,23 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         async.execute()
     }
 
+    inner class MyAsync : AsyncTask<Void, Void, Void>() {
+        override fun doInBackground(vararg params: Void?): Void? {
+            while (true) {
+                if (isNetworksAvailable(context!!.applicationContext)) {
+                    publishProgress()
+                }
+            }
+        }
 
+        override fun onProgressUpdate(vararg values: Void?) {
+            super.onProgressUpdate(*values)
+            binding.rlFace.visibility = View.GONE
+        }
+
+    }
 }
+
+
+
+

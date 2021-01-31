@@ -41,11 +41,12 @@ class FragmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
         addFaceFragment()
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         broadcastCheck = BroadcastCheck()
         requestPermission()
         getLastLocation()
         sttBar()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
     }
 
     private fun sttBar() {
