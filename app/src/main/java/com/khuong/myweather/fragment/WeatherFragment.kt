@@ -135,6 +135,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun update(weatherData: WeatherData) {
+        binding.rl.visibility = View.GONE
         val date = SimpleDateFormat(" HH:mm:ss _ dd/MM/yyyy")
             .format(Date(weatherData.dt * 1000L))
         val sunrise = SimpleDateFormat(" HH:mm")

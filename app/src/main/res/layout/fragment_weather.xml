@@ -2,13 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-        <variable
-            name="data"
-            type="com.khuong.myweather.viewmodel.WeatherViewModel" />
-        <import type="android.view.View"/>
-    </data>
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
@@ -19,6 +12,29 @@
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            android:orientation="vertical">
+
+           <RelativeLayout
+               android:id="@+id/rl"
+               android:background="@color/white"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+               <ImageView
+                   android:id="@+id/ivface"
+                   android:layout_width="250dp"
+                   android:layout_height="250dp"
+                   android:src="@drawable/face"
+                   android:layout_centerInParent="true"/>
+               <TextView
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="Không thể truy cập Internet"
+                   android:layout_below="@+id/ivface"
+                  android:gravity="center"
+                   android:fontFamily="@font/architep"
+                   android:textSize="30sp"
+                   android:textColor="@color/purple_200"
+                   />
+           </RelativeLayout>
 
            <RelativeLayout
                android:layout_width="match_parent"
