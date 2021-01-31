@@ -29,7 +29,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather {
 
 
-
     private lateinit var binding: FragmentWeatherBinding
     private var service: WeatherService? = null
     private var conn: ServiceConnection? = null
@@ -145,8 +144,8 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
         val dpCalculation = resources.displayMetrics.density
         binding.ivWeather.scaleType = ImageView.ScaleType.CENTER_CROP
-        binding.ivWeather.layoutParams.width = (200* dpCalculation).toInt()
-        binding.ivWeather.layoutParams.height = (150* dpCalculation).toInt()
+        binding.ivWeather.layoutParams.width = (200 * dpCalculation).toInt()
+        binding.ivWeather.layoutParams.height = (150 * dpCalculation).toInt()
 
 
         Glide.with(this)
@@ -194,16 +193,15 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             override fun doInBackground(vararg params: Void?): Void? {
                 for (i in 1..300) {
                     Log.d("Debug:", "------------------------------------------------->$i")
-
                     SystemClock.sleep(1000)
                 }
                 return null
             }
 
             override fun onPostExecute(result: Void?) {
-
-                MyApplication.getWeather().getWeek(s)
+                register()
                 MyApplication.getWeather().getWeather(s)
+                MyApplication.getWeather().getWeek(s)
                 register()
                 Log.d("Debug:", "------=========================-----------------------> ")
                 sync()
