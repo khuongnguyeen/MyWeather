@@ -62,6 +62,8 @@ class WeatherViewModel : ViewModel() {
             )
     }
 
+
+
     @SuppressLint("CheckResult")
     fun getWeekLocation(
         lat: Double,
