@@ -28,10 +28,9 @@ import com.khuong.myweather.fragment.FaceFragment
 import com.khuong.myweather.fragment.WeatherFragment
 
 
+@Suppress("DEPRECATION")
 class FragmentActivity : AppCompatActivity() {
 
-    private var latitude: Double = 0.0
-    private var longitude: Double = 0.0
     private lateinit var binding: ActivityFragmentBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private val PERMISSION_ID = 1010
@@ -45,28 +44,22 @@ class FragmentActivity : AppCompatActivity() {
         requestPermission()
         getLastLocation()
         sttBar()
-
     }
 
     private fun sttBar() {
-        if (Build.VERSION.SDK_INT in 19..20) setWindowFlag(
-            this,
-            WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-            true
-        )
-        if (Build.VERSION.SDK_INT >= 19) window.decorView.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        if (Build.VERSION.SDK_INT in 19..20) WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS.setWindowFlag(this, true)
+        if (Build.VERSION.SDK_INT >= 19) window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         if (Build.VERSION.SDK_INT >= 21) {
-            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false)
+            WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS.setWindowFlag(this, false)
             window.statusBarColor = Color.TRANSPARENT
         }
     }
 
-    private fun setWindowFlag(activity: Activity, bit: Int, on: Boolean) {
+    private fun Int.setWindowFlag(activity: Activity, on: Boolean) {
         val win: Window = activity.window
         val winParams: WindowManager.LayoutParams = win.attributes
-        if (on) winParams.flags = winParams.flags or bit else winParams.flags =
-            winParams.flags and bit.inv()
+        if (on) winParams.flags = winParams.flags or this else winParams.flags =
+            winParams.flags and inv()
         win.attributes = winParams
     }
 
@@ -97,21 +90,15 @@ class FragmentActivity : AppCompatActivity() {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    Log.d("Debug:", "---------------------: 22222222222222")
                     return
                 }
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
                     val location: Location? = task.result
                     if (location == null) {
-                        Log.d("Debug:", "---------------------:3333333333333333333333")
                         newLocationData()
                     } else {
-                        Log.d("Debug:", "---------------------Location:" + location.longitude)
-
-                        latitude = location.latitude
-                        longitude = location.longitude
-                        addWeatherFragment(latitude, longitude)
-                        broadcastCheck.setLo(latitude, longitude)
+                        addWeatherFragment(location.latitude, location.longitude)
+                        broadcastCheck.setLo(location.latitude, location.longitude)
                     }
                 }
             } else {
@@ -120,11 +107,9 @@ class FragmentActivity : AppCompatActivity() {
                     "Vui lòng bật vị trí trên thiết bị của bạn",
                     Toast.LENGTH_SHORT
                 ).show()
-                Log.d("Debug:", "---------------------:44444444444444444")
             }
         } else {
             requestPermission()
-            Log.d("Debug:", "---------------------:55555555555555555555555555")
             addFaceFragment()
         }
     }
@@ -138,20 +123,15 @@ class FragmentActivity : AppCompatActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("Debug:", "---------------------:66666666666666666")
             return
         }
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
-        Log.d("Debug:", "---------------------:777777777777777777777777")
     }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation: Location = locationResult.lastLocation
-            latitude = lastLocation.latitude
-            longitude = lastLocation.longitude
-            addWeatherFragment(latitude, longitude)
-            Log.d("Debug:", "---------------------:888888888888888888888")
+            addWeatherFragment(lastLocation.latitude, lastLocation.longitude)
         }
     }
 
@@ -180,12 +160,10 @@ class FragmentActivity : AppCompatActivity() {
             ),
             PERMISSION_ID
         )
-        Log.d("Debug:", "---------------------: 1111111111111111")
     }
 
     private fun isLocationEnabled(): Boolean {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        Log.d("Debug:", "---------------------:99999999999999999999999")
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
@@ -196,18 +174,12 @@ class FragmentActivity : AppCompatActivity() {
     ) {
         if (requestCode == PERMISSION_ID) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("Debug:", "You have the Permission")
                 getLastLocation()
-                Log.d("Debug:", "---------------------:101010101010101010101")
             }
         }
-
-
     }
 
-
     override fun onStart() {
-        Log.d("Debug:", "---------------------: onStart")
         getLastLocation()
         super.onStart()
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)

@@ -43,7 +43,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         if (!isNetworksAvailable(context!!.applicationContext)) {
             binding.rl.visibility = View.VISIBLE
@@ -61,8 +60,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             binding.edtSearch.text = null
             binding.tvCity.visibility = View.GONE
         }
-
-
         binding.edtSearch.setOnEditorActionListener { _, i, _ ->
             return@setOnEditorActionListener when (i) {
                 EditorInfo.IME_ACTION_SEARCH -> {
@@ -112,7 +109,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
                     latitude,
                     longitude
                 ) else binding.rc.adapter!!.notifyDataSetChanged()
-
                 if (service!!.getWeatherData() == null) MyApplication.getWeather()
                     .getWeatherLocation(latitude, longitude)
             }
@@ -144,10 +140,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             .format(Date(weatherData.sys.sunrise * 1000L))
         val sunset = SimpleDateFormat(" HH:mm")
             .format(Date(weatherData.sys.sunset * 1000L))
-        val dpCalculation = resources.displayMetrics.density
-        binding.ivWeather.scaleType = ImageView.ScaleType.CENTER_CROP
-        binding.ivWeather.layoutParams.width = (200 * dpCalculation).toInt()
-        binding.ivWeather.layoutParams.height = (150 * dpCalculation).toInt()
         Glide.with(this)
             .load("http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png")
             .into(binding.ivWeather)

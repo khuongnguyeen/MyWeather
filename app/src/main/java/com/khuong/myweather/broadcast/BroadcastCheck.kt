@@ -11,6 +11,7 @@ import android.util.Log
 import android.widget.Toast
 import com.khuong.myweather.application.MyApplication
 
+@Suppress("DEPRECATION")
 class BroadcastCheck() : BroadcastReceiver() {
 
     private var latitude: Double = 0.0
@@ -25,13 +26,10 @@ class BroadcastCheck() : BroadcastReceiver() {
         this.s = name
     }
 
-
-
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ConnectivityManager.CONNECTIVITY_ACTION -> {
                 if (isNetworksAvailable(context)) {
-
                     if (latitude != 0.0 && s == "") {
                         MyApplication.getWeather().getWeatherLocation(latitude, longitude)
                         MyApplication.getWeather().getWeekLocation(latitude, longitude)
@@ -43,13 +41,8 @@ class BroadcastCheck() : BroadcastReceiver() {
                     if (s != ""){
                         MyApplication.getWeather().getWeather(s)
                         MyApplication.getWeather().getWeek(s)
-
-                        Log.d(
-                            "Debug:",
-                            "-------------------sssssssssssssssssss--------------->$s"
-                        )
+                        Log.d("Debug:", "-------------------sssssssssssssssssss--------------->$s")
                     }
-
                 } else Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG)
                     .show()
             }

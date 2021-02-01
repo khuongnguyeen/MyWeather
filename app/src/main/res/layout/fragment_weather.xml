@@ -117,7 +117,7 @@
                        android:layout_marginTop="30dp"
                        android:fontFamily="@font/architep"
                        android:gravity="center"
-                       android:text="Không có kết nối Internet"
+                       android:text="Muaa"
                        android:textColor="@color/white"
                        android:textSize="50sp" />
 
@@ -138,11 +138,11 @@
 
                        <ImageView
                            android:id="@+id/iv_weather"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
+                           android:layout_width="200dp"
+                           android:layout_height="150dp"
                            android:layout_gravity="center"
                            android:maxWidth="200dp"
-                           android:src="@drawable/no" />
+                           android:src="@drawable/wc_3" />
 
                        <TextView
                            android:id="@+id/tv_weather"
@@ -151,7 +151,7 @@
                            android:layout_gravity="center"
                            android:layout_marginLeft="10dp"
                            android:fontFamily="@font/architep"
-                           android:text=""
+                           android:text="24"
                            android:textColor="@color/white"
                            android:textSize="120sp" />
 

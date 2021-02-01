@@ -63,8 +63,6 @@ class WeatherViewModel : ViewModel() {
             )
     }
 
-
-
     @SuppressLint("CheckResult")
     fun getWeekLocation(
         lat: Double,
@@ -102,7 +100,6 @@ class WeatherViewModel : ViewModel() {
             .subscribe(
                 {
                     weatherData.value = it
-//                    update(it)
                 },
                 {
                     Log.e("duy khuong", "----------------->>>> API <<<<-----------------")
