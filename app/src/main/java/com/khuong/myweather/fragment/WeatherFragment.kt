@@ -2,6 +2,9 @@ package com.khuong.myweather.fragment
 
 import android.annotation.SuppressLint
 import android.content.*
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,9 +28,9 @@ import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("DEPRECATION")
 class WeatherFragment(private val latitude: Double, private val longitude: Double) : Fragment(),
     SwipeRefreshLayout.OnRefreshListener, WeatherAdapter.IWeather {
-
 
     private lateinit var binding: FragmentWeatherBinding
     private var service: WeatherService? = null
@@ -40,16 +43,18 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWeatherBinding.inflate(inflater, container, false)
-        broadcastCheck = BroadcastCheck()
 
+        binding = FragmentWeatherBinding.inflate(inflater, container, false)
+        if (!isNetworksAvailable(context!!.applicationContext)) {
+            binding.rl.visibility = View.VISIBLE
+        }
+        broadcastCheck = BroadcastCheck()
         sync()
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
         createConnectService()
         register()
-
         binding.btnSearch.setOnClickListener {
             binding.layoutSearch.visibility = View.VISIBLE
             binding.btnSearch.setImageResource(R.drawable.search_off)
@@ -67,7 +72,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
                     } else {
                         MyApplication.getWeather().getWeather(binding.edtSearch.text.toString())
                         MyApplication.getWeather().getWeek(binding.edtSearch.text.toString())
-
                     }
                     binding.layoutSearch.visibility = View.GONE
                     binding.tvCity.visibility = View.VISIBLE
@@ -82,7 +86,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             }
         }
         binding.swipeRefreshLayout.setOnRefreshListener(this)
-
         return binding.root
     }
 
@@ -96,7 +99,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             binding.rc.adapter!!.notifyDataSetChanged()
         })
     }
-
 
     private fun createConnectService() {
         conn = object : ServiceConnection {
@@ -135,19 +137,17 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     @SuppressLint("SimpleDateFormat", "SetTextI18n")
     private fun update(weatherData: WeatherData) {
         binding.rl.visibility = View.GONE
+        binding.rl2.visibility = View.GONE
         val date = SimpleDateFormat(" HH:mm:ss _ dd/MM/yyyy")
             .format(Date(weatherData.dt * 1000L))
         val sunrise = SimpleDateFormat(" HH:mm")
             .format(Date(weatherData.sys.sunrise * 1000L))
         val sunset = SimpleDateFormat(" HH:mm")
             .format(Date(weatherData.sys.sunset * 1000L))
-
         val dpCalculation = resources.displayMetrics.density
         binding.ivWeather.scaleType = ImageView.ScaleType.CENTER_CROP
         binding.ivWeather.layoutParams.width = (200 * dpCalculation).toInt()
         binding.ivWeather.layoutParams.height = (150 * dpCalculation).toInt()
-
-
         Glide.with(this)
             .load("http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png")
             .into(binding.ivWeather)
@@ -159,7 +159,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         binding.tvSunrise.text = sunrise
         binding.tvSunset.text = sunset
         binding.tvTime.text = "Cập nhật lần cuối: $date"
-
     }
 
     private fun capitalizeString(string: String): String {
@@ -174,6 +173,19 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             }
         }
         return String(chars)
+    }
+
+    private fun isNetworksAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            return capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        } else {
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
     }
 
     override fun getCount(): Int {

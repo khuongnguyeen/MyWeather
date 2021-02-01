@@ -15,6 +15,7 @@
 
            <RelativeLayout
                android:id="@+id/rl"
+               android:visibility="gone"
                android:background="@color/white"
                android:layout_width="match_parent"
                android:layout_height="match_parent">
@@ -34,6 +35,17 @@
                    android:textSize="30sp"
                    android:textColor="@color/purple_200"
                    />
+           </RelativeLayout>
+
+           <RelativeLayout
+               android:id="@+id/rl2"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+               <ProgressBar
+                   android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   android:layout_centerInParent="true"/>
+
            </RelativeLayout>
 
            <RelativeLayout

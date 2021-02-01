@@ -40,7 +40,6 @@ class FragmentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
-        addFaceFragment()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         broadcastCheck = BroadcastCheck()
         requestPermission()
@@ -88,7 +87,6 @@ class FragmentActivity : AppCompatActivity() {
     }
 
     private fun getLastLocation() {
-
         if (checkPermission()) {
             if (isLocationEnabled()) {
                 if (ActivityCompat.checkSelfPermission(
@@ -99,14 +97,17 @@ class FragmentActivity : AppCompatActivity() {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
+                    Log.d("Debug:", "---------------------: 22222222222222")
                     return
                 }
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
                     val location: Location? = task.result
                     if (location == null) {
+                        Log.d("Debug:", "---------------------:3333333333333333333333")
                         newLocationData()
                     } else {
                         Log.d("Debug:", "---------------------Location:" + location.longitude)
+
                         latitude = location.latitude
                         longitude = location.longitude
                         addWeatherFragment(latitude, longitude)
@@ -119,9 +120,12 @@ class FragmentActivity : AppCompatActivity() {
                     "Vui lòng bật vị trí trên thiết bị của bạn",
                     Toast.LENGTH_SHORT
                 ).show()
+                Log.d("Debug:", "---------------------:44444444444444444")
             }
         } else {
             requestPermission()
+            Log.d("Debug:", "---------------------:55555555555555555555555555")
+            addFaceFragment()
         }
     }
 
@@ -132,19 +136,13 @@ class FragmentActivity : AppCompatActivity() {
         locationRequest.fastestInterval = 0
         locationRequest.numUpdates = 1
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("Debug:", "---------------------:66666666666666666")
             return
         }
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest, locationCallback, Looper.myLooper()
-        )
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        Log.d("Debug:", "---------------------:777777777777777777777777")
     }
 
     private val locationCallback = object : LocationCallback() {
@@ -153,6 +151,7 @@ class FragmentActivity : AppCompatActivity() {
             latitude = lastLocation.latitude
             longitude = lastLocation.longitude
             addWeatherFragment(latitude, longitude)
+            Log.d("Debug:", "---------------------:888888888888888888888")
         }
     }
 
@@ -181,13 +180,13 @@ class FragmentActivity : AppCompatActivity() {
             ),
             PERMISSION_ID
         )
+        Log.d("Debug:", "---------------------: 1111111111111111")
     }
 
     private fun isLocationEnabled(): Boolean {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+        Log.d("Debug:", "---------------------:99999999999999999999999")
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     override fun onRequestPermissionsResult(
@@ -199,6 +198,7 @@ class FragmentActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d("Debug:", "You have the Permission")
                 getLastLocation()
+                Log.d("Debug:", "---------------------:101010101010101010101")
             }
         }
 
@@ -207,6 +207,8 @@ class FragmentActivity : AppCompatActivity() {
 
 
     override fun onStart() {
+        Log.d("Debug:", "---------------------: onStart")
+        getLastLocation()
         super.onStart()
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(broadcastCheck, intentFilter)
