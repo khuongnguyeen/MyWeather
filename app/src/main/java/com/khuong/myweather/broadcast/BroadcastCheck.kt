@@ -26,6 +26,8 @@ class BroadcastCheck() : BroadcastReceiver() {
         this.s = name
     }
 
+
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ConnectivityManager.CONNECTIVITY_ACTION -> {

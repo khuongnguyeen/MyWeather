@@ -33,8 +33,10 @@ class FragmentActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFragmentBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private val PERMISSION_ID = 1010
     private lateinit var broadcastCheck: BroadcastCheck
+    companion object{
+        const val PERMISSION_ID = 1010
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

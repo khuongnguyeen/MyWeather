@@ -12,16 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import com.khuong.myweather.R
 import com.khuong.myweather.adapter.WeatherAdapter
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.broadcast.BroadcastCheck
 import com.khuong.myweather.databinding.FragmentWeatherBinding
+import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
 import com.khuong.myweather.model.WeatherDataTwo
 import com.khuong.myweather.service.WeatherService
@@ -37,6 +38,9 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     private var conn: ServiceConnection? = null
     private var s = ""
     private lateinit var broadcastCheck: BroadcastCheck
+    private var weatherData: WeatherData? = null
+    var listWeather: ListWeather? = null
+    private val listWe = mutableListOf<WeatherDataTwo>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +51,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         if (!isNetworksAvailable(context!!.applicationContext)) {
             binding.rl.visibility = View.VISIBLE
         }
+        getDataLocal()
         broadcastCheck = BroadcastCheck()
         sync()
         binding.rc.layoutManager =
@@ -87,14 +92,25 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     }
 
     private fun register() {
+
         MyApplication.getWeather().weatherData.observe(this, {
             update(it)
             s = it.name
+            weatherData = it
             broadcastCheck.setName(s)
+        })
+        MyApplication.getWeather().listWeather.observe(this, {
+            listWeather = it
         })
         MyApplication.getWeather().listWe.observe(this, {
             binding.rc.adapter!!.notifyDataSetChanged()
         })
+        if (weatherData != null && listWeather != null) {
+            setDataLocal(weatherData!!, listWeather!!)
+            listWe.addAll(listWeather!!.list)
+        }
+        getDataLocal()
+
     }
 
     private fun createConnectService() {
@@ -181,14 +197,24 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     }
 
     override fun getCount(): Int {
-        if (service == null) {
-            return 0
+
+        return if (!isNetworksAvailable(context!!.applicationContext) && listWeather != null) {
+            listWeather!!.list.size
+        } else {
+            if (service == null) {
+                return 0
+            }
+            return service!!.getListWer().size
         }
-        return service!!.getListWer().size
     }
 
+
     override fun getData(position: Int): WeatherDataTwo {
-        return service!!.getListWer()[position]
+
+        return if (!isNetworksAvailable(context!!.applicationContext) && listWeather != null) {
+            listWeather!!.list[position]
+        } else
+            service!!.getListWer()[position]
     }
 
     fun sync() {
@@ -206,12 +232,42 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
                 register()
                 MyApplication.getWeather().getWeather(s)
                 MyApplication.getWeather().getWeek(s)
-                register()
+//                register()
                 Log.d("Debug:", "------=========================-----------------------> ")
                 sync()
             }
         }
         async.execute()
+    }
+
+    private fun getDataLocal() {
+        val sharedPreferences: SharedPreferences =
+            context!!.applicationContext.getSharedPreferences("weatherSetting", Context.MODE_PRIVATE)
+        val string = sharedPreferences.getString("weather", "")
+        val string2 = sharedPreferences.getString("listWea", "")
+        val g = Gson()
+        if (g.fromJson(string, WeatherData::class.java) != null) {
+            update(g.fromJson(string, WeatherData::class.java))
+            listWeather = g.fromJson(string2, ListWeather::class.java)
+            binding.rl.visibility = View.GONE
+            Log.d("khuongkk:", "Lưu thành công")
+        }
+    }
+
+    private fun setDataLocal(weatherData: WeatherData, listWeather: ListWeather) {
+        val sharedPreferences: SharedPreferences =
+            context!!.applicationContext.getSharedPreferences(
+                "weatherSetting",
+                Context.MODE_PRIVATE
+            )
+        val editor = sharedPreferences.edit()
+        val g = Gson()
+        val string2 = g.toJson(listWeather)
+        editor.putString("listWea", string2)
+        val string = g.toJson(weatherData)
+        editor.putString("weather", string)
+        editor.apply()
+        Log.d("khuongkk:", "Lưu thành công")
     }
 
 }

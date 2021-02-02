@@ -2,7 +2,6 @@ package com.khuong.myweather.viewmodel
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.khuong.myweather.api.ApiService
@@ -17,7 +16,7 @@ class WeatherViewModel : ViewModel() {
 
     private val weatherAPI: ApiService = RetrofitUtils.createRetrofit()
     val weatherData = MutableLiveData<WeatherData>()
-     private val listWeather= MutableLiveData<ListWeather>()
+     val listWeather= MutableLiveData<ListWeather>()
      val listWe= MutableLiveData<MutableList<WeatherDataTwo>>()
 
     @SuppressLint("CheckResult")
