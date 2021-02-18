@@ -111,6 +111,7 @@ class FragmentActivity : AppCompatActivity() {
                     } else {
                         addWeatherFragment(location.latitude, location.longitude)
                         broadcastCheck.setLo(location.latitude, location.longitude)
+                        PopUpWeather(applicationContext).setLo(location.latitude, location.longitude)
                     }
                 }
             } else {

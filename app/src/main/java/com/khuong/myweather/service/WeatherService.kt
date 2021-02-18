@@ -36,28 +36,13 @@ class WeatherService: LifecycleService() {
             listWer.addAll(it)
         })
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
-        registerReceiver(broadCastReceiver, intentFilter)
-
 
     }
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        if (intent != null) {
-            Log.d("duykhuong","okkkkkkkkkkkkkkkkkkkkkk")
-            broadCastReceiver = object : BroadcastReceiver(){
-                override fun onReceive(context: Context?, intent: Intent?) {
-                    when(intent!!.action){
-                        Intent.ACTION_SCREEN_ON->{
-                            Log.d("duykhuong","khuong ON")
-                        }
-                    }
-                }
-            }
-        }
+
         return  START_STICKY
     }
 
@@ -68,9 +53,6 @@ class WeatherService: LifecycleService() {
 
     class MyBinder(val service: WeatherService) : Binder()
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(broadCastReceiver)
-    }
+
 
 }

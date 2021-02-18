@@ -5,19 +5,19 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/background"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/border"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             app:cardElevation="10dp"
             tools:ignore="MissingConstraints">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/grey_400"
                 android:orientation="vertical">
@@ -75,7 +75,7 @@
 
                         <ImageView
                             android:id="@+id/iv_weather"
-                            android:layout_width="200dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="150dp"
                             android:layout_gravity="center"
                             android:maxWidth="200dp"
@@ -84,7 +84,7 @@
 
                         <TextView
                             android:id="@+id/tv_weather"
-                            android:layout_width="wrap_content"
+                            android:layout_width="120dp"
                             android:layout_height="150dp"
                             android:fontFamily="@font/architep"
                             android:gravity="center"
