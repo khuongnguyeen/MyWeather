@@ -46,6 +46,11 @@ open class BroadcastCheck() : BroadcastReceiver() {
                 }
             }
 
+
+            Intent.ACTION_SCREEN_ON->{
+                Log.d("duykhuong","khuong ON")
+                Toast.makeText(context, "Screen ON", Toast.LENGTH_LONG).show()
+            }
         }
     }
 

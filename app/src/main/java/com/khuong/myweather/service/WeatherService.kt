@@ -1,10 +1,12 @@
 package com.khuong.myweather.service
 
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
+import android.util.Log
 import androidx.lifecycle.LifecycleService
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.model.ListWeather
@@ -44,7 +46,18 @@ class WeatherService: LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-
+        if (intent != null) {
+            Log.d("duykhuong","okkkkkkkkkkkkkkkkkkkkkk")
+            broadCastReceiver = object : BroadcastReceiver(){
+                override fun onReceive(context: Context?, intent: Intent?) {
+                    when(intent!!.action){
+                        Intent.ACTION_SCREEN_ON->{
+                            Log.d("duykhuong","khuong ON")
+                        }
+                    }
+                }
+            }
+        }
         return  START_STICKY
     }
 
@@ -59,6 +72,5 @@ class WeatherService: LifecycleService() {
         super.onDestroy()
         unregisterReceiver(broadCastReceiver)
     }
-
 
 }
