@@ -13,11 +13,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.khuong.myweather.R
+import com.khuong.myweather.activity.PopUpWeather
 import com.khuong.myweather.adapter.WeatherAdapter
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.broadcast.BroadcastCheck
@@ -57,6 +59,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         binding.rc.adapter = WeatherAdapter(this)
+        openServiceUnBound()
         createConnectService()
         register()
         binding.btnSearch.setOnClickListener {
@@ -64,6 +67,9 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             binding.btnSearch.setImageResource(R.drawable.search_off)
             binding.edtSearch.text = null
             binding.tvCity.visibility = View.GONE
+        }
+        binding.ivWeather.setOnClickListener {
+            PopUpWeather(context!!).show()
         }
         binding.edtSearch.setOnEditorActionListener { _, i, _ ->
             return@setOnEditorActionListener when (i) {
@@ -93,16 +99,16 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
     private fun register() {
 
-        MyApplication.getWeather().weatherData.observe(this, {
+        MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer{
             update(it)
             s = it.name
             weatherData = it
             broadcastCheck.setName(s)
         })
-        MyApplication.getWeather().listWeather.observe(this, {
+        MyApplication.getWeather().listWeather.observe(this,  androidx.lifecycle.Observer{
             listWeather = it
         })
-        MyApplication.getWeather().listWe.observe(this, {
+        MyApplication.getWeather().listWe.observe(this,  androidx.lifecycle.Observer{
             binding.rc.adapter!!.notifyDataSetChanged()
         })
         if (weatherData != null && listWeather != null) {
@@ -111,6 +117,12 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         }
         getDataLocal()
 
+    }
+
+    private fun openServiceUnBound(){
+        val intent = Intent()
+        intent.setClass(context!!, WeatherService::class.java)
+        context!!.startService(intent)
     }
 
     private fun createConnectService() {

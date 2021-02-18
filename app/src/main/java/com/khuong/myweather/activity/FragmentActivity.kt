@@ -3,6 +3,7 @@ package com.khuong.myweather.activity
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.khuong.myweather.R
 import com.khuong.myweather.broadcast.BroadcastCheck
@@ -185,6 +187,7 @@ class FragmentActivity : AppCompatActivity() {
         getLastLocation()
         super.onStart()
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
         registerReceiver(broadcastCheck, intentFilter)
     }
 

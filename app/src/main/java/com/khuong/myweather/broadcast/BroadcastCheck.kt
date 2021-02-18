@@ -9,10 +9,11 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import com.khuong.myweather.activity.PopUpWeather
 import com.khuong.myweather.application.MyApplication
 
 @Suppress("DEPRECATION")
-class BroadcastCheck() : BroadcastReceiver() {
+open class BroadcastCheck() : BroadcastReceiver() {
 
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
@@ -35,19 +36,16 @@ class BroadcastCheck() : BroadcastReceiver() {
                     if (latitude != 0.0 && s == "") {
                         MyApplication.getWeather().getWeatherLocation(latitude, longitude)
                         MyApplication.getWeather().getWeekLocation(latitude, longitude)
-                        Log.d(
-                            "Debug:",
-                            "------------------------------------------------->$latitude $longitude "
-                        )
                     }
                     if (s != ""){
                         MyApplication.getWeather().getWeather(s)
                         MyApplication.getWeather().getWeek(s)
-                        Log.d("Debug:", "-------------------sssssssssssssssssss--------------->$s")
                     }
-                } else Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG)
-                    .show()
+                } else {
+                    Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG).show()
+                }
             }
+
         }
     }
 

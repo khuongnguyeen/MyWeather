@@ -2,10 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.khuong.myweather">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:name=".application.MyApplication"
         android:allowBackup="true"
@@ -13,9 +15,10 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ndk"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.MyWeather"
+        android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity android:name=".activity.PopUpWeather"></activity>
         <activity android:name=".activity.FragmentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.WeatherService"/>
+
+        <service android:name=".service.WeatherService" />
     </application>
 
 </manifest>
