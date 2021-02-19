@@ -209,7 +209,7 @@ class FragmentActivity : AppCompatActivity() {
         getLastLocation()
         super.onStart()
         val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
+//        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
         registerReceiver(broadcastCheck, intentFilter)
     }
 
