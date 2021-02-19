@@ -7,6 +7,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" android:protectionLevel=
+        "signature|preinstalled|appop|pre23|development"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:name=".application.MyApplication"
@@ -18,7 +23,6 @@
         android:theme="@style/Theme.MyWeather"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".activity.PopUpWeather"></activity>
         <activity android:name=".activity.FragmentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -4,19 +4,21 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
+import android.view.View
 import android.view.Window
 import android.view.animation.DecelerateInterpolator
+import androidx.appcompat.app.AppCompatDialog
 import androidx.core.graphics.ColorUtils
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.databinding.PopupBinding
+import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
 import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
@@ -24,10 +26,6 @@ import java.util.*
 
 @Suppress("DEPRECATION")
 class PopUpWeather(context: Context) : Dialog(context) {
-
-    init {
-        setCancelable(false)
-    }
 
     private lateinit var binding: PopupBinding
     private var service: WeatherService? = null
@@ -44,17 +42,8 @@ class PopUpWeather(context: Context) : Dialog(context) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = PopupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        createConnectService()
-        MyApplication.getWeather().getWeatherLocation(latitude, longitude)
+        getDataLocal()
 
-        val alpha = 100
-        val alphaColor = ColorUtils.setAlphaComponent(Color.parseColor("#000000"), alpha)
-        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), Color.TRANSPARENT, alphaColor)
-        colorAnimation.duration = 500
-        colorAnimation.addUpdateListener { animator ->
-            binding.background.setBackgroundColor(animator.animatedValue as Int)
-        }
-        colorAnimation.start()
 
         binding.border.alpha = 0f
         binding.border.animate().alpha(1f).setDuration(500).setInterpolator(
@@ -63,24 +52,20 @@ class PopUpWeather(context: Context) : Dialog(context) {
         binding.background.setOnClickListener {
             dismiss()
         }
+
     }
 
-    private fun createConnectService() {
-        conn = object : ServiceConnection {
-            override fun onServiceDisconnected(name: ComponentName?) {
-            }
+    private fun getDataLocal() {
+        val sharedPreferences: SharedPreferences =
+            context.applicationContext.getSharedPreferences("weatherSetting", Context.MODE_PRIVATE)
+        val string = sharedPreferences.getString("weather", "")
+        val g = Gson()
+        if (g.fromJson(string, WeatherData::class.java) != null) {
+            update(g.fromJson(string, WeatherData::class.java))
 
-            override fun onServiceConnected(name: ComponentName?, binder: IBinder) {
-                val myBinder = binder as WeatherService.MyBinder
-                service = myBinder.service
-                if (service!!.getWeatherData() == null)
-                    MyApplication.getWeather().getWeatherLocation(latitude, longitude)
-            }
         }
-        val intent = Intent()
-        intent.setClass(context!!, WeatherService::class.java)
-        context!!.bindService(intent, conn!!, Context.BIND_AUTO_CREATE)
     }
+
 
     override fun onBackPressed() {
         super.onBackPressed()

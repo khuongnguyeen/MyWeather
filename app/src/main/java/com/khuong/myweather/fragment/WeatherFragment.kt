@@ -5,15 +5,17 @@ import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
+import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
@@ -44,11 +46,19 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     var listWeather: ListWeather? = null
     private val listWe = mutableListOf<WeatherDataTwo>()
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (!Settings.canDrawOverlays(context)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION
+            )
+            startActivityForResult(intent, 0)
+        }
+
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         if (!isNetworksAvailable(context!!.applicationContext)) {
             binding.rl.visibility = View.VISIBLE
@@ -94,6 +104,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             }
         }
         binding.swipeRefreshLayout.setOnRefreshListener(this)
+        getDataLocal()
         return binding.root
     }
 

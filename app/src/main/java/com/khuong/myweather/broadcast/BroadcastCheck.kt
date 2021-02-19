@@ -9,6 +9,7 @@ import android.net.NetworkInfo
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.khuong.myweather.activity.PopUpWeather
 import com.khuong.myweather.application.MyApplication
 
@@ -29,6 +30,7 @@ open class BroadcastCheck() : BroadcastReceiver() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ConnectivityManager.CONNECTIVITY_ACTION -> {
@@ -46,12 +48,15 @@ open class BroadcastCheck() : BroadcastReceiver() {
                 }
             }
 
-
-            Intent.ACTION_SCREEN_ON->{
-                Log.d("duykhuong","khuong ON")
-                Toast.makeText(context, "Screen ON", Toast.LENGTH_LONG).show()
-                PopUpWeather(context).show()
-            }
+//            Intent.ACTION_SCREEN_ON->{
+//                Log.d("duykhuong","khuong ON")
+//                Toast.makeText(context, "Screen ON", Toast.LENGTH_LONG).show()
+////                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+////                PopUpWeather(context).show()
+////                PopUpWeather(context).window!!.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
+//
+//
+//            }
         }
     }
 

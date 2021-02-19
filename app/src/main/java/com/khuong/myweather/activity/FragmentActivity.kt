@@ -3,7 +3,6 @@ package com.khuong.myweather.activity
 import android.Manifest
 import android.annotation.TargetApi
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -12,12 +11,10 @@ import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -46,6 +43,8 @@ class FragmentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         broadcastCheck = BroadcastCheck()
@@ -152,6 +151,7 @@ class FragmentActivity : AppCompatActivity() {
         )
     }
 
+
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation: Location = locationResult.lastLocation
@@ -217,4 +217,9 @@ class FragmentActivity : AppCompatActivity() {
         super.onDestroy()
         unregisterReceiver(broadcastCheck)
     }
+
+
+
+
+
 }
