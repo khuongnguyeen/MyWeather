@@ -3,4 +3,5 @@
     <string name="text_test">Ha Noi, VN</string>
     <string name="location">Địa điểm</string>
     <string name="thongbao">17:00:00  25/01/2021</string>
+    <string name="settings">settings</string>
 </resources>

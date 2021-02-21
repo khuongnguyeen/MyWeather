@@ -24,14 +24,15 @@ import com.khuong.myweather.R
 import com.khuong.myweather.activity.PopUpWeather
 import com.khuong.myweather.adapter.WeatherAdapter
 import com.khuong.myweather.application.MyApplication
-import com.khuong.myweather.broadcast.BroadcastCheck
 import com.khuong.myweather.databinding.FragmentWeatherBinding
+import com.khuong.myweather.dialog.DialogSetting
 import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
 import com.khuong.myweather.model.WeatherDataTwo
 import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 @Suppress("DEPRECATION")
 class WeatherFragment(private val latitude: Double, private val longitude: Double) : Fragment(),
@@ -41,7 +42,6 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     private var service: WeatherService? = null
     private var conn: ServiceConnection? = null
     private var s = ""
-    private lateinit var broadcastCheck: BroadcastCheck
     private var weatherData: WeatherData? = null
     var listWeather: ListWeather? = null
     private val listWe = mutableListOf<WeatherDataTwo>()
@@ -54,17 +54,17 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
     ): View {
         if (!Settings.canDrawOverlays(context)) {
             val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + context!!.applicationContext.packageName)
             )
             startActivityForResult(intent, 0)
         }
-
+        service?.setLo(latitude, longitude)
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         if (!isNetworksAvailable(context!!.applicationContext)) {
             binding.rl.visibility = View.VISIBLE
         }
         getDataLocal()
-        broadcastCheck = BroadcastCheck()
         sync()
         binding.rc.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -72,6 +72,11 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         openServiceUnBound()
         createConnectService()
         register()
+
+
+        binding.btnSetting.setOnClickListener {
+            DialogSetting(context!!).show()
+        }
         binding.btnSearch.setOnClickListener {
             binding.layoutSearch.visibility = View.VISIBLE
             binding.btnSearch.setImageResource(R.drawable.search_off)
@@ -108,18 +113,19 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         return binding.root
     }
 
+
     private fun register() {
 
-        MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer{
+        MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer {
             update(it)
             s = it.name
             weatherData = it
-            broadcastCheck.setName(s)
+            service?.setName(s)
         })
-        MyApplication.getWeather().listWeather.observe(this,  androidx.lifecycle.Observer{
+        MyApplication.getWeather().listWeather.observe(this, androidx.lifecycle.Observer {
             listWeather = it
         })
-        MyApplication.getWeather().listWe.observe(this,  androidx.lifecycle.Observer{
+        MyApplication.getWeather().listWe.observe(this, androidx.lifecycle.Observer {
             binding.rc.adapter!!.notifyDataSetChanged()
         })
         if (weatherData != null && listWeather != null) {
@@ -130,7 +136,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
     }
 
-    private fun openServiceUnBound(){
+    private fun openServiceUnBound() {
         val intent = Intent()
         intent.setClass(context!!, WeatherService::class.java)
         context!!.startService(intent)
@@ -265,7 +271,10 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
 
     private fun getDataLocal() {
         val sharedPreferences: SharedPreferences =
-            context!!.applicationContext.getSharedPreferences("weatherSetting", Context.MODE_PRIVATE)
+            context!!.applicationContext.getSharedPreferences(
+                "weatherSetting",
+                Context.MODE_PRIVATE
+            )
         val string = sharedPreferences.getString("weather", "")
         val string2 = sharedPreferences.getString("listWea", "")
         val g = Gson()
@@ -292,6 +301,9 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
         editor.apply()
         Log.d("khuongkk:", "Lưu thành công")
     }
+
+
+
 
 }
 

@@ -1,24 +1,14 @@
 package com.khuong.myweather.activity
 
-import android.animation.ArgbEvaluator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.*
-import android.graphics.Color
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
-import android.view.View
 import android.view.Window
 import android.view.animation.DecelerateInterpolator
-import androidx.appcompat.app.AppCompatDialog
-import androidx.core.graphics.ColorUtils
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.databinding.PopupBinding
-import com.khuong.myweather.model.ListWeather
 import com.khuong.myweather.model.WeatherData
 import com.khuong.myweather.service.WeatherService
 import java.text.SimpleDateFormat
@@ -28,8 +18,6 @@ import java.util.*
 class PopUpWeather(context: Context) : Dialog(context) {
 
     private lateinit var binding: PopupBinding
-    private var service: WeatherService? = null
-    private var conn: ServiceConnection? = null
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
     fun setLo(latitude: Double, longitude: Double) {
@@ -51,6 +39,8 @@ class PopUpWeather(context: Context) : Dialog(context) {
         ).start()
         binding.background.setOnClickListener {
             dismiss()
+            val intent = Intent(context, WeatherService::class.java)
+            context.stopService(intent)
         }
 
     }
@@ -70,6 +60,8 @@ class PopUpWeather(context: Context) : Dialog(context) {
     override fun onBackPressed() {
         super.onBackPressed()
         dismiss()
+        val intent = Intent(context, WeatherService::class.java)
+        context.stopService(intent)
     }
 
     @SuppressLint("SimpleDateFormat", "SetTextI18n")

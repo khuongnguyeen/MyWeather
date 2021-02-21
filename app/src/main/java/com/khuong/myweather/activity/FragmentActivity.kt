@@ -1,7 +1,6 @@
 package com.khuong.myweather.activity
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -10,11 +9,11 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.provider.Settings
+import android.provider.AlarmClock
+import android.provider.Settings.System.ALARM_ALERT
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -35,7 +34,7 @@ class FragmentActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFragmentBinding
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var broadcastCheck: BroadcastCheck
+    private lateinit var broadcast: BroadcastCheck
 
     companion object {
         const val PERMISSION_ID = 1010
@@ -43,11 +42,10 @@ class FragmentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        broadcast = BroadcastCheck()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_fragment)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        broadcastCheck = BroadcastCheck()
         requestPermission()
         getLastLocation()
         sttBar()
@@ -109,8 +107,11 @@ class FragmentActivity : AppCompatActivity() {
                         newLocationData()
                     } else {
                         addWeatherFragment(location.latitude, location.longitude)
-                        broadcastCheck.setLo(location.latitude, location.longitude)
-                        PopUpWeather(applicationContext).setLo(location.latitude, location.longitude)
+
+                        PopUpWeather(applicationContext).setLo(
+                            location.latitude,
+                            location.longitude
+                        )
                     }
                 }
             } else {
@@ -208,18 +209,15 @@ class FragmentActivity : AppCompatActivity() {
     override fun onStart() {
         getLastLocation()
         super.onStart()
-        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-//        intentFilter.addAction(Intent.ACTION_SCREEN_ON)
-        registerReceiver(broadcastCheck, intentFilter)
+//        val filter = IntentFilter(ALARM_ALERT)
+//        filter.addAction(AlarmClock.ACTION_SET_ALARM)
+//        registerReceiver(broadcast, filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(broadcastCheck)
+//        unregisterReceiver(broadcast)
     }
-
-
-
 
 
 }

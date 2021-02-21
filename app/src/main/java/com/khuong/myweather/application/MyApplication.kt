@@ -8,6 +8,7 @@ class MyApplication: Application() {
     companion object{
         private lateinit var weatherViewModel: WeatherViewModel
         fun getWeather() = weatherViewModel
+        var SETTING = 1
     }
 
     override fun onCreate() {

@@ -1,14 +1,22 @@
 package com.khuong.myweather.service
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import com.khuong.myweather.R
@@ -24,18 +32,29 @@ class WeatherService : LifecycleService() {
     private var weatherData: WeatherData? = null
     private var listWer = mutableListOf<WeatherDataTwo>()
     private var listWeather: ListWeather? = null
-    private var popUpWeather : PopUpWeather? = null
+    private var popUpWeather: PopUpWeather? = null
+    private var no: Notification? = null
     private lateinit var broadcast: BroadcastReceiver
+    private var latitude: Double = 0.0
+    private var longitude: Double = 0.0
+    private var s: String = ""
+    fun setLo(latitude: Double, longitude: Double) {
+        this.latitude = latitude
+        this.longitude = longitude
+    }
+
+    fun setName(name: String) {
+        this.s = name
+    }
 
     fun getWeatherData() = weatherData
     fun getListWer() = listWer
 
     override fun onCreate() {
         super.onCreate()
-        popUpWeather = PopUpWeather(applicationContext)
-        createNotification()
+//        createNotification()
         Log.d("duykhuong", "Service onCreate-..............")
-
+        popUpWeather = PopUpWeather(applicationContext)
         MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer {
             weatherData = it
         })
@@ -47,17 +66,39 @@ class WeatherService : LifecycleService() {
             listWer.addAll(it)
         })
 
-        val intentFilter = IntentFilter()
+
+        val intentFilter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         intentFilter.addAction(Intent.ACTION_SCREEN_ON)
-        broadcast = object : BroadcastReceiver(){
+
+        broadcast = object : BroadcastReceiver() {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (intent?.action) {
-                    Intent.ACTION_SCREEN_ON->{
+                    ConnectivityManager.CONNECTIVITY_ACTION -> {
+                        Log.d("duykhuong", "khuong ON    ConnectivityManager.CONNECTIVITY_ACTION")
+                        if (isNetworksAvailable(applicationContext)) {
+                            if (latitude != 0.0 && s == "") {
+                                MyApplication.getWeather().getWeatherLocation(latitude, longitude)
+                                MyApplication.getWeather().getWeekLocation(latitude, longitude)
+                            }
+                            if (s != "") {
+                                MyApplication.getWeather().getWeather(s)
+                                MyApplication.getWeather().getWeek(s)
+                            }
+                        } else {
+                            Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG)
+                                .show()
+                        }
 
-                        Log.d("duykhuong","khuong ON")
-                        Toast.makeText(context, "Screen ON", Toast.LENGTH_LONG).show()
-                        popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
-                        popUpWeather!!.show();
+                    }
+                    Intent.ACTION_SCREEN_ON -> {
+                        if (MyApplication.SETTING == 1) {
+                            Log.e("duykhuong", "Service onStartCommand-.............. Intent.ACTION_SCREEN_ON")
+                            createNotification()
+                            popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+                            popUpWeather!!.show()
+                            stopForeground(true)
+                        }
                     }
                 }
             }
@@ -66,13 +107,39 @@ class WeatherService : LifecycleService() {
 
     }
 
+    private fun isNetworksAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            return capabilities != null && capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+        } else {
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            return networkInfo != null && networkInfo.isConnected
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         super.onStartCommand(intent, flags, startId)
+        if (MyApplication.SETTING == 2 && intent!!.getIntExtra("setting", 0) == 1) {
+            createNotification()
+            popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+            popUpWeather!!.show()
+            stopForeground(true)
+        }
+
+
         Log.d("duykhuong", "Service onStartCommand-..............")
 
 
         return START_STICKY
     }
+
 
     override fun onStart(intent: Intent?, startId: Int) {
         super.onStart(intent, startId)
@@ -89,13 +156,13 @@ class WeatherService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(broadcast)
-        Log.d("duykhuong", "Service onDestroy-..............")
     }
 
     private fun createNotification() {
         createChannel()
-        val no = NotificationCompat.Builder(this,"NO")
+        no = NotificationCompat.Builder(this, "NO")
             .setSmallIcon(R.drawable.w_1)
+            .setPriority(Notification.PRIORITY_MIN)
             .build()
         startForeground(1, no)
     }
@@ -103,7 +170,7 @@ class WeatherService : LifecycleService() {
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel("NO", "NO", importance)
+            val channel = NotificationChannel("NO", "Nguyễn Duy Khương", importance)
             channel.description = "NO"
             val notificationManager = getSystemService(
                 NotificationManager::class.java
