@@ -1,5 +1,6 @@
 package com.khuong.myweather.service
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,18 +8,24 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import com.google.android.gms.location.*
 import com.khuong.myweather.R
 import com.khuong.myweather.activity.PopUpWeather
 import com.khuong.myweather.application.MyApplication
@@ -37,6 +44,7 @@ class WeatherService : LifecycleService() {
     private lateinit var broadcast: BroadcastReceiver
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var s: String = ""
     fun setLo(latitude: Double, longitude: Double) {
         this.latitude = latitude
@@ -53,6 +61,9 @@ class WeatherService : LifecycleService() {
     override fun onCreate() {
         super.onCreate()
         createNotification()
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        getLastLocation()
         Log.d("duykhuong", "Service onCreate-..............")
 
         MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer {
@@ -104,6 +115,88 @@ class WeatherService : LifecycleService() {
 
     }
 
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    private fun checkPermission(): Boolean {
+        if (
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            val lastLocation: Location = locationResult.lastLocation
+            latitude = lastLocation.latitude
+            longitude = lastLocation.longitude
+        }
+    }
+
+    private fun newLocationData() {
+        val locationRequest = LocationRequest()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 0
+        locationRequest.fastestInterval = 0
+        locationRequest.numUpdates = 1
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private fun getLastLocation() {
+        if (checkPermission()) {
+            if (isLocationEnabled()) {
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    return
+                }
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        newLocationData()
+                    } else {
+                        latitude = location.latitude
+                        longitude = location.longitude
+                    }
+                }
+            }
+        }
+    }
+
     private fun isNetworksAvailable(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -120,6 +213,11 @@ class WeatherService : LifecycleService() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        getLastLocation()
+        MyApplication.getWeather().getWeatherLocation(latitude, longitude)
+        MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer {
+            popUpWeather = PopUpWeather(applicationContext,it)
+        })
         super.onStartCommand(intent, flags, startId)
         if (MyApplication.SETTING == 2 && intent!!.getIntExtra("setting", 0) == 1) {
             popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)

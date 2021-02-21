@@ -33,7 +33,15 @@ class DialogSetting(context: Context) : Dialog(context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, BroadcastCheck::class.java)
         var setting: Int = 1
-        binding.radioOne.isChecked = true
+        if (MyApplication.SETTING == 1){
+            binding.radioOne.isChecked = true
+            setting = 1
+        }else{
+            binding.radioTwo.isChecked = true
+            binding.timePicker.visibility = View.VISIBLE
+            getDataLocal()
+            setting = 2
+        }
         binding.timePicker.setIs24HourView(true)
         binding.radioOne.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked -> // TODO Auto-generated method stub
             if (buttonView.isChecked) {
@@ -63,14 +71,28 @@ class DialogSetting(context: Context) : Dialog(context) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
             dismiss()
             MyApplication.SETTING = setting
-            setDataLocal(setting)
+            setDataLocal(setting,gio,phut)
             binding.text.text = "Bạn vừa chọn: $gio : $phut"
         }
     }
 
+    private fun getDataLocal() {
+        val sharedPreferences: SharedPreferences =
+            context.applicationContext.getSharedPreferences(
+                "setting",
+                Context.MODE_PRIVATE
+            )
 
+        val gio = sharedPreferences.getInt("gio",0)
+        val phut = sharedPreferences.getInt("phut",0)
+        var string = "$gio:$phut"
+        if(phut < 10){
+            string = "$gio:0$phut"
+        }
+        binding.text.text = string
+    }
 
-    private fun setDataLocal(i: Int) {
+    private fun setDataLocal(i: Int,gio:Int,phut:Int) {
         val sharedPreferences: SharedPreferences =
             context.applicationContext.getSharedPreferences(
                 "setting",
@@ -78,6 +100,8 @@ class DialogSetting(context: Context) : Dialog(context) {
             )
         val editor = sharedPreferences.edit()
         editor.putInt("myappsetting", i)
+        editor.putInt("gio", gio)
+        editor.putInt("phut", phut)
         editor.apply()
     }
 
