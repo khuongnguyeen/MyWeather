@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
@@ -23,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.location.*
 import com.khuong.myweather.R
+import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.broadcast.BroadcastCheck
 import com.khuong.myweather.databinding.ActivityFragmentBinding
 import com.khuong.myweather.fragment.FaceFragment
@@ -49,6 +51,19 @@ class FragmentActivity : AppCompatActivity() {
         requestPermission()
         getLastLocation()
         sttBar()
+        getDataLocal()
+    }
+
+    private fun getDataLocal() {
+        val sharedPreferences: SharedPreferences =
+            applicationContext.getSharedPreferences(
+                "setting",
+                Context.MODE_PRIVATE
+            )
+        val string = sharedPreferences.getInt("myappsetting",1)
+        if (string != 1) {
+            MyApplication.SETTING = string
+        }
     }
 
     private fun sttBar() {
@@ -108,10 +123,10 @@ class FragmentActivity : AppCompatActivity() {
                     } else {
                         addWeatherFragment(location.latitude, location.longitude)
 
-                        PopUpWeather(applicationContext).setLo(
-                            location.latitude,
-                            location.longitude
-                        )
+//                        PopUpWeather(applicationContext).setLo(
+//                            location.latitude,
+//                            location.longitude
+//                        )
                     }
                 }
             } else {

@@ -84,7 +84,7 @@ class WeatherFragment(private val latitude: Double, private val longitude: Doubl
             binding.tvCity.visibility = View.GONE
         }
         binding.ivWeather.setOnClickListener {
-            PopUpWeather(context!!).show()
+            PopUpWeather(context!!,weatherData!!).show()
         }
         binding.edtSearch.setOnEditorActionListener { _, i, _ ->
             return@setOnEditorActionListener when (i) {

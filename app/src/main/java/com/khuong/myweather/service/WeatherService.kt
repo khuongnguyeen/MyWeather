@@ -52,11 +52,12 @@ class WeatherService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
-//        createNotification()
+        createNotification()
         Log.d("duykhuong", "Service onCreate-..............")
-        popUpWeather = PopUpWeather(applicationContext)
+
         MyApplication.getWeather().weatherData.observe(this, androidx.lifecycle.Observer {
             weatherData = it
+            popUpWeather = PopUpWeather(applicationContext,it)
         })
         MyApplication.getWeather().listWeather.observe(this, androidx.lifecycle.Observer {
             listWeather = it
@@ -89,15 +90,11 @@ class WeatherService : LifecycleService() {
                             Toast.makeText(context, "Không có kết nối Internet", Toast.LENGTH_LONG)
                                 .show()
                         }
-
                     }
                     Intent.ACTION_SCREEN_ON -> {
                         if (MyApplication.SETTING == 1) {
-                            Log.e("duykhuong", "Service onStartCommand-.............. Intent.ACTION_SCREEN_ON")
-                            createNotification()
                             popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
                             popUpWeather!!.show()
-                            stopForeground(true)
                         }
                     }
                 }
@@ -119,24 +116,16 @@ class WeatherService : LifecycleService() {
             val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
             return networkInfo != null && networkInfo.isConnected
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         super.onStartCommand(intent, flags, startId)
         if (MyApplication.SETTING == 2 && intent!!.getIntExtra("setting", 0) == 1) {
-            createNotification()
             popUpWeather!!.window!!.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
             popUpWeather!!.show()
-            stopForeground(true)
         }
-
-
         Log.d("duykhuong", "Service onStartCommand-..............")
-
-
         return START_STICKY
     }
 

@@ -5,14 +5,17 @@ import android.app.Dialog
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.CompoundButton
+import com.google.gson.Gson
 import com.khuong.myweather.application.MyApplication
 import com.khuong.myweather.broadcast.BroadcastCheck
 import com.khuong.myweather.databinding.SettingBinding
+import com.khuong.myweather.model.WeatherData
 import java.util.*
 
 
@@ -35,15 +38,15 @@ class DialogSetting(context: Context) : Dialog(context) {
         binding.radioOne.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked -> // TODO Auto-generated method stub
             if (buttonView.isChecked) {
                 setting = 1
-                Log.i("duykhuong", "RadioButton " + MyApplication.SETTING+ " : " + isChecked)
+                Log.i("duykhuong", "RadioButton " + MyApplication.SETTING + " : " + isChecked)
             }
         })
         binding.radioTwo.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked -> // TODO Auto-generated method stub
             if (buttonView.isChecked) {
                 binding.timePicker.visibility = View.VISIBLE
                 setting = 2
-                Log.i("duykhuong", "RadioButton " + MyApplication.SETTING+ " : " + isChecked)
-            }else{
+                Log.i("duykhuong", "RadioButton " + MyApplication.SETTING + " : " + isChecked)
+            } else {
                 binding.timePicker.visibility = View.GONE
             }
         })
@@ -58,10 +61,24 @@ class DialogSetting(context: Context) : Dialog(context) {
             val pendingIntent =
                 PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
-          dismiss()
+            dismiss()
             MyApplication.SETTING = setting
+            setDataLocal(setting)
             binding.text.text = "Bạn vừa chọn: $gio : $phut"
         }
+    }
+
+
+
+    private fun setDataLocal(i: Int) {
+        val sharedPreferences: SharedPreferences =
+            context.applicationContext.getSharedPreferences(
+                "setting",
+                Context.MODE_PRIVATE
+            )
+        val editor = sharedPreferences.edit()
+        editor.putInt("myappsetting", i)
+        editor.apply()
     }
 
 

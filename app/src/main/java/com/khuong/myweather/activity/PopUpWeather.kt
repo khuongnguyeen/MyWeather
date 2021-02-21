@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Suppress("DEPRECATION")
-class PopUpWeather(context: Context) : Dialog(context) {
+class PopUpWeather(context: Context,val weatherData:WeatherData) : Dialog(context) {
 
     private lateinit var binding: PopupBinding
     private var latitude: Double = 0.0
@@ -30,7 +30,7 @@ class PopUpWeather(context: Context) : Dialog(context) {
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         binding = PopupBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        getDataLocal()
+        update(weatherData)
 
 
         binding.border.alpha = 0f
@@ -43,17 +43,6 @@ class PopUpWeather(context: Context) : Dialog(context) {
             context.stopService(intent)
         }
 
-    }
-
-    private fun getDataLocal() {
-        val sharedPreferences: SharedPreferences =
-            context.applicationContext.getSharedPreferences("weatherSetting", Context.MODE_PRIVATE)
-        val string = sharedPreferences.getString("weather", "")
-        val g = Gson()
-        if (g.fromJson(string, WeatherData::class.java) != null) {
-            update(g.fromJson(string, WeatherData::class.java))
-
-        }
     }
 
 
